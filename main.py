@@ -1,15 +1,31 @@
-from createResponse     import *
-from executeRequest     import *
+'''
+The main file for project 1 for Netwerken en gedistribueerde systemen.
+'''
+from buildEtags         import *
 from parseRequest       import *
-import TCPSelectServer2
+from executeRequest     import *
+from createResponse     import *
+from TCPSelectServer2   import *
 
-def HTTPserver(data):
-#    request = parseRequest(data)
-#    result = executeRequest(request)
-#    response = createResponse(result)
-#    return response
-    print (data)
+'''
+The HTTPserver function implements (some) of the behavior specified in
+http://tools.ietf.org/html/rfc2616
+It divides the function
+'''
+def HTTPserver(HTTPrequest):
+    
+    #parse the request
+    request = parseRequest(HTTPrequest)
 
-TCPSelectServer2.runServer(HTTPserver)
+    #create a response
+    response = executeRequest(request)
+
+    #construct and return the response
+    return createResponse(response)
+
+#update the ETags
+buildEtags()
+#And run the server!
+runServer(HTTPserver)
 
     
