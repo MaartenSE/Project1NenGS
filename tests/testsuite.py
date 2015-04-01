@@ -20,7 +20,7 @@ class TestStringMethods(unittest.TestCase):
       
       requestline, remainingrequest = receivedData.split(CRLF, 1)
       http, number, okindicator = requestline.split(' ', 2)
-      print okindicator
+      #print okindicator
       self.assertEqual(okindicator, 'OK')
 	  
 #GET for a single resource that doesn't exist
@@ -36,11 +36,10 @@ class TestStringMethods(unittest.TestCase):
       
       requestline, remainingrequest = receivedData.split(CRLF, 1)
       http, errorcode, okindicator = requestline.split(' ', 2)
-      print errorcode
+      #print errorcode
       self.assertEqual(errorcode, '404')
 	  
 #GET for an existing single resource followed by a GET for that same resource, with caching utilized on the client/tester side
-#How do I test caching? This does not work, because I don't know how to enable caching at the client side; if it was enabled this should work
   def test_getCachingResource(self):
       serverName = 'localhost'
       serverPort = 8080
@@ -49,22 +48,25 @@ class TestStringMethods(unittest.TestCase):
       clientSocket.connect((serverName, serverPort))
       request1 = 'GET /cachable.html HTTP/1.1' + CRLF + 'Host: localhost:8080'+ CRLF + 'Connection: keep-alive' + CRLF + 'Cache-Control: max-age=0' + CRLF + 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' + CRLF + 'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36' + CRLF + 'Accept-Encoding: gzip, deflate, sdch' + CRLF + 'Accept-Language: de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4' + CRLF + CRLF
       clientSocket.send(request1)
-      receivedData1 = clientSocket.recv(4096)
+      receivedData1 = clientSocket.recv(4096)  
+	  #get etag from received data
+      request1, connection1, etag1 = receivedData1.split(CRLF,2)
+      etagHeader, etagValue = etag1.split(' ', 1)
+      #print 'receivedETAG1: ' + etagValue
+     
       
-      time.sleep(0.5)
-      
-      request2 = 'GET /cachable.html HTTP/1.1' + CRLF + 'Host: localhost:8080'+ CRLF + 'Connection: keep-alive' + CRLF + 'Cache-Control: max-age=0' + CRLF + 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' + CRLF + 'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36' + CRLF + 'Accept-Encoding: gzip, deflate, sdch' + CRLF + 'Accept-Language: de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4' + CRLF + CRLF
+      request2 = 'GET /cachable.html HTTP/1.1' + CRLF + 'Host: localhost:8080'+ CRLF + 'Connection: keep-alive' + CRLF + 'Cache-Control: max-age=0' + CRLF + 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' + CRLF + 'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36' + CRLF + 'Accept-Encoding: gzip, deflate, sdch' + CRLF + 'Accept-Language: de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4' + CRLF + 'If-None-Match: ' + etagValue + CRLF + CRLF
       clientSocket.send(request2)
       receivedData2 = clientSocket.recv(4096)
       clientSocket.close()
       
       requestline, remainingrequest = receivedData2.split(CRLF, 1)
       http, statuscode, okindicator = requestline.split(' ', 2)
-      print 'receivedData1 \n' + receivedData1
-      print 'receivedData2 \n' + receivedData2
+      #print 'receivedData1 \n' + receivedData1
+      #print 'receivedData2 \n' + receivedData2
       self.assertEqual(statuscode, '304')
-#GET for a directory with an existing index.html file
-#We handle directory calls as errors which should return 404 errorcode
+      
+#GET for a directory with an non-existing index.html file
   def test_getDirectoryWithoutIndex(self):
       serverName = 'localhost'
       serverPort = 8080
@@ -77,11 +79,10 @@ class TestStringMethods(unittest.TestCase):
       receivedData
       requestline, remainingrequest = receivedData.split(CRLF, 1)
       http, errorcode, okindicator = requestline.split(' ', 2)
-      print errorcode
+      #print errorcode
       self.assertEqual(errorcode, '404')
 	  
-#GET for a directory with non-existing index.html file
-#We handle directory calls as errors which should return 404 errorcode
+#GET for a directory with existing index.html file
   def test_getDirectoryWitIndex(self):
       serverName = 'localhost'
       serverPort = 8080
@@ -94,8 +95,8 @@ class TestStringMethods(unittest.TestCase):
       receivedData
       requestline, remainingrequest = receivedData.split(CRLF, 1)
       http, errorcode, okindicator = requestline.split(' ', 2)
-      print errorcode
-      self.assertEqual(errorcode, '404')
+      #print errorcode
+      self.assertEqual(errorcode, '301')
 	  
 #multiple GETs over the same (persistent) connection with the last GET prompting closing the connection, the connection should be closed
 

@@ -17,8 +17,7 @@ def parseRequest (HTTPrequest):
     #put the headers into a new dictionary using a regular expression.
     #update the request dictionary with the new dictionary
     request['headers'] = dict(re.findall(r"(?P<name>.*?): (?P<value>.*?)\r\n", headers))
-    print(len(request['headers']))
 
-    request['method'], request['filepath'], request['httpversion'] = requestline.split(' ', 2)
+    request['method'], request['requestpath'], request['httpversion'] = requestline.split(' ', 2)
  
     return request
