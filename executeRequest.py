@@ -73,8 +73,8 @@ def executeRequest(request):
     if 'Connection' in request['headers'] and \
     request['headers']['Connection']=='keep-alive':
         response['headers']['Connection'] = 'keep-alive'
-    #else:       
-    #    response['headers']['Connection'] = 'close'
+    else:       
+        response['headers']['Connection'] = 'close'
     
     # if there is a messagebody then set the response header for the content-length
     if 'messagebody' in response:
