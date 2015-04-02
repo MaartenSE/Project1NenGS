@@ -1,11 +1,14 @@
 '''
 The main file for project 1 for Netwerken en gedistribueerde systemen.
 '''
+
 from buildEtags         import *
 from parseRequest       import *
 from executeRequest     import *
 from createResponse     import *
 from TCPSelectServer2   import *
+
+portnumber = 8080
 
 '''
 The HTTPserver function implements (some) of the behavior specified in
@@ -26,6 +29,6 @@ def HTTPserver(HTTPrequest):
 #update the ETags
 buildEtags()
 #And run the server!
-runServer(HTTPserver)
+runServer(HTTPserver,portnumber)
 
     

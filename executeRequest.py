@@ -3,7 +3,7 @@ executeRequest creates a dictionary with all the
 properties needed for creating a http response,
 given a dictionary with all the properties of a http request
 '''
-
+from __future__ import print_function
 import os.path
 
 #content is the folder containing the webpages of the server
@@ -66,23 +66,22 @@ def executeRequest(request):
 
             response['statuscode']      = "404"
             response['reasonphrase']    = "Not Found"
-
-        #To make it look good in the Shell =]
-        print("")
-
-
     
 #fill the headers dictionary
     #Set the persistence of the connection
+    print(request['headers']['Connection'])
     if 'Connection' in request['headers'] and \
     request['headers']['Connection']=='keep-alive':
         response['headers']['Connection'] = 'keep-alive'
-    else:       
-        response['headers']['Connection'] = 'close'
+    #else:       
+    #    response['headers']['Connection'] = 'close'
     
     # if there is a messagebody then set the response header for the content-length
     if 'messagebody' in response:
         response['headers']['Content-Length']=  str(len(response['messagebody']))
+
+    #To make it look good in the Shell =]
+    print("")
 
     return response
 
